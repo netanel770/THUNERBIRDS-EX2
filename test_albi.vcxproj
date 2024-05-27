@@ -139,6 +139,7 @@
     <ClInclude Include="GameConfig.h" />
     <ClInclude Include="general.h" />
     <ClInclude Include="io_utils.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="point.h" />

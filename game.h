@@ -6,15 +6,22 @@
 #include <Windows.h>
 #include <conio.h>
 #include "io_utils.h"
-
-
+#include <filesystem>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <sstream>
+#include "level.h"
 class Game {
+    constexpr static size_t num_of_levels = 3;
     Board board;
     Timer timer;
     Player player;
     char current_ship = 'b';
-    char current_move;  //w-up,x-down,d-right,a-left
     bool is_color;
+    level levels_arr[num_of_levels];
 public:
     void init() {
         board.init();
@@ -70,6 +77,25 @@ public:
     void set_current_ship(char ch) {
         current_ship = ch;
     }
+    bool matchesPattern(const std::string& filename) {
+        const std::string prefix = "tb";
+        const std::string suffix = ".screen.txt";
+        return filename.size() >= prefix.size() + suffix.size() &&
+            filename.compare(0, prefix.size(), prefix) == 0 &&
+            filename.compare(filename.size() - suffix.size(), suffix.size(), suffix) == 0;
+    }
+    std::string readFileContent(const std::string& filename) {
+        std::ifstream file(filename);
+        if (!file) {
+            std::cerr << "Unable to open file: " << filename << std::endl;
+            return "";
+        }
+        std::stringstream buffer;
+        buffer << file.rdbuf(); // Read the file content into the stringstream
+        file.close();
+        return buffer.str(); // Convert stringstream to string and return
+    }
+
     bool checking_game_details() {
         if (timer.time_is_over() && player.get_life() > 0)
         {
@@ -81,7 +107,10 @@ public:
         }
         return false;
     }
-
+    void print_current_ship() {
+        gotoxy(60, 2);
+        cout << "current ship:"<<current_ship;
+    }
     char updating_current_ship(char current_ship, char pressed_char) {
         if (current_ship == (char)GameConfig::eKeys::SMALL_SHIP ||
             current_ship == (char)GameConfig::eKeys::UPPER_SMALL_SHIP) {
@@ -95,7 +124,47 @@ public:
                 pressed_char == (char)GameConfig::eKeys::UPPER_SMALL_SHIP)
                 current_ship = (char)GameConfig::eKeys::SMALL_SHIP;
         }
+        print_current_ship();
         return current_ship;
+    }
+    // File containing the list of filenames
+    void get_levels_details() {
+        std::ifstream fileList("file_list.txt");
+
+        // Check if the file_list.txt file opened successfully
+        if (!fileList) {
+            std::cerr << "Unable to open file_list.txt" << std::endl;
+            return;
+        }
+
+        // Vector to store matching file names
+        std::vector<std::string> matchingFiles;
+        std::string filename;
+
+        // Read file names from the text file
+        while (std::getline(fileList, filename)) {
+            if (matchesPattern(filename)) {
+                matchingFiles.push_back(filename);
+            }
+        }
+
+        // Close the file list input file stream
+        fileList.close();
+
+        // Sort the file names lexicographically
+        std::sort(matchingFiles.begin(), matchingFiles.end());
+
+        // Read and print files in lexicographical order
+        for (const auto& fname : matchingFiles) {
+            std::string content = readFileContent(fname);
+            if (!content.empty()) {
+                std::cout << "Contents of file: " << fname << std::endl;
+                std::cout << content << std::endl;
+            }
+            else {
+                std::cerr << "Failed to read the content of the file: " << fname << std::endl;
+            }
+        }
     }
     bool is_esc() {
         char temp;
@@ -190,10 +259,6 @@ public:
         }
         return 0;
     }
-
-
-
-
     int up_or_down(char pressed_char, int index, char current_ship_shape) {
         Point point1, point2;
         int direction = -1;
@@ -226,6 +291,7 @@ public:
     }
     int running_game()
     {
+        print_current_ship();
         char current_ship_shape;
         player.init();
         timer.reset_to_start();

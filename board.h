@@ -108,19 +108,14 @@ public:
 		blocks[0].pos[1].set(30, 19);
 		blocks[0].pos[2].set(29, 20);
 		blocks[0].pos[3].set(30, 20);
-		
 		blocks[1].pos[0].set(20, 16);
 		blocks[1].pos[1].set(21, 16);
 		blocks[1].pos[2].set(20, 17);
 		blocks[1].pos[3].set(21, 17);
-		
 		blocks[2].pos[0].set(50, 13);
 		blocks[2].pos[1].set(51, 13);
-
-		
 		blocks[3].pos[0].set(74, 23);
 		blocks[3].pos[1].set(75, 23);
-		
 		blocks[4].pos[0].set(45, 20);
 		blocks[4].pos[1].set(46, 20);
 		
@@ -140,9 +135,9 @@ public:
 		return res;
 	}
 	int is_available(Point point1, Point point2, char current_shape) {
-		gotoxy(87, 5);
-		gotoxy(82, 3);
-		gotoxy(82, 5);
+		//gotoxy(87, 5);
+		//gotoxy(82, 3);
+		//gotoxy(82, 5);
 		if ((is_block(board[point1.getY()][point1.getX()]) || (is_block(board[point2.getY()][point2.getX()])))) {
 			if (!can_i_move_the_block(board[point1.getY()][point1.getX()], current_shape)&& !can_i_move_the_block(board[point2.getY()][point2.getX()], current_shape)
 				||(board[point1.getY()][point1.getX()] == 'W' || board[point2.getY()][point2.getX()] == 'W'))
