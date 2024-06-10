@@ -62,22 +62,21 @@ public:
 		pos[1].set(num3, num4);
 		is_finish = false;
 	}
-	void reset_big_ship() {
-		pos[0].set(1, 7);
-		pos[1].set(2, 7);
-		pos[2].set(1, 8);
-		pos[3].set(2, 8);
+	void reset_big_ship(Ship org) {
+		for (int i = 0; i < 4; i++)
+			pos[i].set(org.getPos(i).getX(), org.getPos(i).getX());
 		is_finish = false;
 	}
 	
-	void reset_small_ship() {
-		pos[0].set(1, 5);
-		pos[1].set(2, 5);
+	void reset_small_ship(Ship org) {
+		for(int i=0;i<2;i++)
+		pos[i].set(org.getPos(i).getX(), org.getPos(i).getX());
 		is_finish = false;
 	}
 	void set_shape(char shape)
 	{
 		ship_shape = shape;
 	}
+	
 
 };

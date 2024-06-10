@@ -16,7 +16,6 @@
 #include "level.h"
 class Game {
     constexpr static size_t num_of_levels = 3;
-    Board board;
     Timer timer;
     Player player;
     char current_ship = 'b';
@@ -24,7 +23,8 @@ class Game {
     level levels_arr[num_of_levels];
 public:
     void init() {
-        board.init();
+        levels_arr[0].bulid_board_from_file("tb1.screen.txt");
+        //levels_arr[0].get_board().init();
     }
     void set_is_color(bool n) {
         is_color = n;
@@ -39,18 +39,18 @@ public:
             switch (choice) {
             case 1:
                 std::cout << "Starting a new game without colors...\n";
-                board.reset_board();
+                levels_arr[0].get_board().reset_board();
                 is_color = false;
-                board.show(is_color);
+                levels_arr[0].get_board().show(is_color);
                 is_exit = running_game();
                 clrscr();
                 GameConfig::show_menu();
                 break;
             case 2:
                 std::cout << "Starting a new game with colors...\n";
-                board.reset_board();
+                levels_arr[0].get_board().reset_board();
                 is_color = true;
-                board.show(is_color);
+                levels_arr[0].get_board().show(is_color);
                 is_exit = running_game();
                 clrscr();
                 GameConfig::show_menu();
@@ -99,8 +99,8 @@ public:
     bool checking_game_details() {
         if (timer.time_is_over() && player.get_life() > 0)
         {
-            board.reset_board();
-            board.show(is_color);
+            levels_arr[0].get_board().reset_board();
+            levels_arr[0].get_board().show(is_color);
             player.reduce_life();
             timer.reset_to_start();
             return true;
@@ -177,7 +177,7 @@ public:
         if (temp == '9')
             return true;
         clrscr();
-        board.show(is_color);
+        levels_arr[0].get_board().show(is_color);
         return false;
     }
     int left_or_right(char pressed_char, int index, char current_ship_shape) {
@@ -189,7 +189,7 @@ public:
                 direction = -1;
                 pos_index = 0;
             }
-            point2.set(board.ships[index].getPos(pos_index).getX() + direction, board.ships[0].getPos(pos_index).getY());
+            point2.set(levels_arr[0].get_board().ships[index].getPos(pos_index).getX() + direction, levels_arr[0].get_board().ships[0].getPos(pos_index).getY());
             point1.set(1, 1);
         }
         else {
@@ -201,59 +201,59 @@ public:
                 first_index = 0;
                 second_index = 2;
             }
-            point1.set(board.ships[index].getPos(first_index).getX() + direction, board.ships[index].getPos(first_index).getY());
-            point2.set(board.ships[index].getPos(second_index).getX() + direction, board.ships[index].getPos(second_index).getY());
+            point1.set(levels_arr[0].get_board().ships[index].getPos(first_index).getX() + direction, levels_arr[0].get_board().ships[index].getPos(first_index).getY());
+            point2.set(levels_arr[0].get_board().ships[index].getPos(second_index).getX() + direction, levels_arr[0].get_board().ships[index].getPos(second_index).getY());
         }
-        int isAvalable = board.is_available(point1, point2, current_ship);
-        if (board.is_exit_point(point1, point2, current_ship)) {
-            board.delete_ship_from_screen(current_ship_shape);
-            if (board.ships[0].get_is_finish() && board.ships[1].get_is_finish())
+        int isAvalable = levels_arr[0].get_board().is_available(point1, point2, current_ship);
+        if (levels_arr[0].get_board().is_exit_point(point1, point2, current_ship)) {
+            levels_arr[0].get_board().delete_ship_from_screen(current_ship_shape);
+            if (levels_arr[0].get_board().ships[0].get_is_finish() && levels_arr[0].get_board().ships[1].get_is_finish())
                 return 1;
         }
-        else if (isAvalable && !board.ships[index].get_is_finish()) {
+        else if (isAvalable && !levels_arr[0].get_board().ships[index].get_is_finish()) {
             if (isAvalable == 1) {
-                board.delete_ship_from_screen(current_ship_shape);
+                levels_arr[0].get_board().delete_ship_from_screen(current_ship_shape);
                 if (GameConfig::is_left(pressed_char))
-                    board.move_left_the_ship(current_ship_shape);
+                    levels_arr[0].get_board().move_left_the_ship(current_ship_shape);
                 else
-                    board.move_right_the_ship(current_ship_shape);
-                board.ships[index].print_ship(is_color);
+                    levels_arr[0].get_board().move_right_the_ship(current_ship_shape);
+                levels_arr[0].get_board().ships[index].print_ship(is_color);
             }
             if (isAvalable == 2)
             {
-                char block_shape = board.board[point2.getY()][point2.getX()];
+                char block_shape = levels_arr[0].get_board().board[point2.getY()][point2.getX()];
                 if (block_shape > '1')
                 {
                     if (GameConfig::is_left(pressed_char))
-                        point2.set(board.blocks[block_shape - '0'].getPos(0).getX() - 1, board.blocks[block_shape - '0'].getPos(0).getY());
+                        point2.set(levels_arr[0].get_board().blocks[block_shape - '0'].getPos(0).getX() - 1, levels_arr[0].get_board().blocks[block_shape - '0'].getPos(0).getY());
                     else
-                        point2.set(board.blocks[block_shape - '0'].getPos(1).getX() + 1, board.blocks[block_shape - '0'].getPos(1).getY());
+                        point2.set(levels_arr[0].get_board().blocks[block_shape - '0'].getPos(1).getX() + 1, levels_arr[0].get_board().blocks[block_shape - '0'].getPos(1).getY());
                     point1.set(1, 1);
 
                 }
                 else {
                     if (GameConfig::is_left(pressed_char)) {
-                        point1.set(board.blocks[block_shape - '0'].getPos(0).getX() - 1, board.blocks[block_shape - '0'].getPos(0).getY());
-                        point2.set(board.blocks[block_shape - '0'].getPos(2).getX() - 1, board.blocks[block_shape - '0'].getPos(2).getY());
+                        point1.set(levels_arr[0].get_board().blocks[block_shape - '0'].getPos(0).getX() - 1, levels_arr[0].get_board().blocks[block_shape - '0'].getPos(0).getY());
+                        point2.set(levels_arr[0].get_board().blocks[block_shape - '0'].getPos(2).getX() - 1, levels_arr[0].get_board().blocks[block_shape - '0'].getPos(2).getY());
                     }
                     else {
-                        point1.set(board.blocks[block_shape - '0'].getPos(1).getX() + 1, board.blocks[block_shape - '0'].getPos(1).getY());
-                        point2.set(board.blocks[block_shape - '0'].getPos(3).getX() + 1, board.blocks[block_shape - '0'].getPos(3).getY());
+                        point1.set(levels_arr[0].get_board().blocks[block_shape - '0'].getPos(1).getX() + 1, levels_arr[0].get_board().blocks[block_shape - '0'].getPos(1).getY());
+                        point2.set(levels_arr[0].get_board().blocks[block_shape - '0'].getPos(3).getX() + 1, levels_arr[0].get_board().blocks[block_shape - '0'].getPos(3).getY());
                     }
                 }
-                if (board.is_available(point1, point2, block_shape) == 1) {
-                    board.delete_block_from_screen(block_shape);
+                if (levels_arr[0].get_board().is_available(point1, point2, block_shape) == 1) {
+                    levels_arr[0].get_board().delete_block_from_screen(block_shape);
                     if (GameConfig::is_left(pressed_char))
-                        board.move_left_the_block(block_shape);
+                        levels_arr[0].get_board().move_left_the_block(block_shape);
                     else
-                        board.move_right_the_block(block_shape);
-                    board.blocks[block_shape - '0'].print_block(block_shape, is_color);
-                    board.delete_ship_from_screen(current_ship_shape);
+                        levels_arr[0].get_board().move_right_the_block(block_shape);
+                    levels_arr[0].get_board().blocks[block_shape - '0'].print_block(block_shape, is_color);
+                    levels_arr[0].get_board().delete_ship_from_screen(current_ship_shape);
                     if (GameConfig::is_left(pressed_char))
-                        board.move_left_the_ship(current_ship_shape);
+                        levels_arr[0].get_board().move_left_the_ship(current_ship_shape);
                     else
-                        board.move_right_the_ship(current_ship_shape);
-                    board.ships[index].print_ship(is_color);
+                        levels_arr[0].get_board().move_right_the_ship(current_ship_shape);
+                    levels_arr[0].get_board().ships[index].print_ship(is_color);
                 }
             }
         }
@@ -265,27 +265,27 @@ public:
         if (GameConfig::is_down(pressed_char))
             direction = 1;
         if (current_ship == 's' || GameConfig::is_up(pressed_char)) {
-            point1.set(board.ships[index].getPos(0).getX(), board.ships[index].getPos(0).getY() + direction);
-            point2.set(board.ships[index].getPos(1).getX(), board.ships[index].getPos(1).getY() + direction);
+            point1.set(levels_arr[0].get_board().ships[index].getPos(0).getX(), levels_arr[0].get_board().ships[index].getPos(0).getY() + direction);
+            point2.set(levels_arr[0].get_board().ships[index].getPos(1).getX(), levels_arr[0].get_board().ships[index].getPos(1).getY() + direction);
         }
         else
         {
-            point1.set(board.ships[index].getPos(2).getX(), board.ships[index].getPos(2).getY() + direction);
-            point2.set(board.ships[index].getPos(3).getX(), board.ships[index].getPos(3).getY() + direction);
+            point1.set(levels_arr[0].get_board().ships[index].getPos(2).getX(), levels_arr[0].get_board().ships[index].getPos(2).getY() + direction);
+            point2.set(levels_arr[0].get_board().ships[index].getPos(3).getX(), levels_arr[0].get_board().ships[index].getPos(3).getY() + direction);
         }
-        if (board.is_exit_point(point1, point2, current_ship)) {
-            board.delete_ship_from_screen(current_ship_shape);
-            if (board.ships[0].get_is_finish() && board.ships[1].get_is_finish())
+        if (levels_arr[0].get_board().is_exit_point(point1, point2, current_ship)) {
+            levels_arr[0].get_board().delete_ship_from_screen(current_ship_shape);
+            if (levels_arr[0].get_board().ships[0].get_is_finish() && levels_arr[0].get_board().ships[1].get_is_finish())
                 return 1;
         }
-        else if ((board.is_available(point1, point2, current_ship) == 1) && !board.ships[index].get_is_finish())
+        else if ((levels_arr[0].get_board().is_available(point1, point2, current_ship) == 1) && !levels_arr[0].get_board().ships[index].get_is_finish())
         {
-            board.delete_ship_from_screen(current_ship_shape);
+            levels_arr[0].get_board().delete_ship_from_screen(current_ship_shape);
             if (GameConfig::is_down(pressed_char))
-                board.move_down_the_ship(current_ship_shape);
+                levels_arr[0].get_board().move_down_the_ship(current_ship_shape);
             else
-                board.move_up_the_ship(current_ship_shape);
-            board.ships[index].print_ship(is_color);
+                levels_arr[0].get_board().move_up_the_ship(current_ship_shape);
+            levels_arr[0].get_board().ships[index].print_ship(is_color);
         }
         return 0;
     }
@@ -307,6 +307,8 @@ public:
             }
             timer.print_timer();
             player.print_life();
+            gotoxy(18, 2);
+            cout << "asdadsadsa";
             Sleep(100);
             if (_kbhit()) {
                 gotoxy(85, 1);

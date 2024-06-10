@@ -13,7 +13,7 @@
 #include "io_utils.h"
 class Ship;
 class Board {
-	static int num_of_blocks;
+	 int num_of_blocks;
 public:
 	constexpr static size_t WIDTH = 80;
 	constexpr static size_t HEIGHT = 25;
@@ -54,11 +54,13 @@ public:
 	Ship org_small;
 	Ship org_big;
 	Block* blocks;
+	Block* org_blocks;
 	Point legend_pos;
 	Point exit_pos;
 	void init() {
 		std::memcpy(board, original_board, sizeof(original_board));
 		blocks = new Block[num_of_blocks];
+		org_blocks = new Block[num_of_blocks];
 		for (int i = 0; i < HEIGHT; i++) {
 			for (int j = 0; j < WIDTH; j++) {
 				if (board[i][j] == '&') {
@@ -81,19 +83,24 @@ public:
 		}
 		ships[0].set_shape('@');
 		ships[1].set_shape('#');
-		ships[0].reset_small_ship();
-		ships[1].reset_big_ship();
-		for (int i = 0; i < NUM_BLOCKS; i++) {
+		ships[0].reset_small_ship(org_small);
+		ships[1].reset_big_ship(org_big);
+		for (int i = 0; i < num_of_blocks; i++) {
 			if (i > 1)
 				blocks[i].set_size(2);
 			else
 				blocks[i].set_size(4);
 		}
 	}
+	~Board()
+	{
+		delete org_blocks;
+		delete blocks;
+	}
 	void reset_board() {
 		std::memcpy(board, original_board, sizeof(original_board));
-		ships[0].reset_small_ship();
-		ships[1].reset_big_ship();
+		ships[0].reset_small_ship(org_small);
+		ships[1].reset_big_ship(org_big);
 		reset_blocks();
 	}
 	void show(bool is_color) {
@@ -108,20 +115,13 @@ public:
 		return num_of_blocks;
 	}
 	void reset_blocks() {
-		blocks[0].pos[0].set(29, 19);
-		blocks[0].pos[1].set(30, 19);
-		blocks[0].pos[2].set(29, 20);
-		blocks[0].pos[3].set(30, 20);
-		blocks[1].pos[0].set(20, 16);
-		blocks[1].pos[1].set(21, 16);
-		blocks[1].pos[2].set(20, 17);
-		blocks[1].pos[3].set(21, 17);
-		blocks[2].pos[0].set(50, 13);
-		blocks[2].pos[1].set(51, 13);
-		blocks[3].pos[0].set(74, 23);
-		blocks[3].pos[1].set(75, 23);
-		blocks[4].pos[0].set(45, 20);
-		blocks[4].pos[1].set(46, 20);
+		for (int i = 0; i < num_of_blocks; i++)
+		{
+			for (int j = 0; j < blocks[i].getSize(); j++)
+			{
+				blocks[i].pos[j].set(org_blocks[i].pos[j].getX(), org_blocks[i].pos[j].getY());
+			}
+		}
 		
 		return;
 	}

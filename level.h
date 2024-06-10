@@ -9,9 +9,6 @@ using namespace std;
 class level {
 	Board board;
 	Timer timer;
-	void init() {
-		board.init();
-	}
 public:
 	void bulid_board_from_file(string file_name) {
         std::ifstream file(file_name); // Assuming the file is named input.txt
@@ -65,25 +62,18 @@ public:
     }
     
     void bulid_block_from_vector(std::vector<int>info) {
-        board.set_num_of_blocks(info[13]);
-        cout << info[13];
+        //cout << info[13];
         int info_index = 14;
         int size_of_block = info[info_index];
         for (int i = 0; i <info[13] ; i++) {
             size_of_block = info[info_index];
             info_index++;
             board.blocks[i].set_size(size_of_block);
+            board.org_blocks[i].set_size(size_of_block);
             for (int j = 0; j < size_of_block; j++) {
                 board.blocks[i].pos[j].set(info[info_index], info[info_index+1]);
+                board.org_blocks[i].pos[j].set(info[info_index], info[info_index + 1]);
                 info_index += 2;
-            }
-        }
-        for (int i = 0; i < info[13]; i++)
-        {
-            cout << i << "is:" << endl;
-            for (int j = 0; j < board.blocks[i].getSize(); j++) {
-                board.blocks[i].pos[j].print_point();
-                    cout << endl;
             }
         }
     }
@@ -91,9 +81,11 @@ public:
     void bulid_obj_from_string(const std::string& str) {
         int i = 0;
         std::vector<int>info = getNumbersFromString(str);
+        board.set_num_of_blocks(info[13]);
+        board.init();
         timer.set_minute(0);
         timer.set_mili_second(info[0]);
-        timer.print_timer();
+        //timer.print_timer();
         board.ships[0].set_locations_big_ship(info[1], info[2], info[3], info[4], info[5], info[6], info[7], info[8]);
         board.ships[1].set_locations_small_ship(info[9], info[10], info[11], info[12]);
         board.org_big.set_locations_big_ship(info[1], info[2], info[3], info[4], info[5], info[6], info[7], info[8]);
