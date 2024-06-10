@@ -13,7 +13,7 @@
 #include "io_utils.h"
 class Ship;
 class Board {
-	
+	static int num_of_blocks;
 public:
 	constexpr static size_t WIDTH = 80;
 	constexpr static size_t HEIGHT = 25;
@@ -51,12 +51,14 @@ public:
 	// the actual board that will be modified
 	char board[HEIGHT][WIDTH + 1];
 	Ship ships[NUM_SHIPS];
-	Block blocks[NUM_BLOCKS];
+	Ship org_small;
+	Ship org_big;
+	Block* blocks;
 	Point legend_pos;
 	Point exit_pos;
-	
 	void init() {
 		std::memcpy(board, original_board, sizeof(original_board));
+		blocks = new Block[num_of_blocks];
 		for (int i = 0; i < HEIGHT; i++) {
 			for (int j = 0; j < WIDTH; j++) {
 				if (board[i][j] == '&') {
@@ -77,7 +79,6 @@ public:
 				}
 			}
 		}
-		
 		ships[0].set_shape('@');
 		ships[1].set_shape('#');
 		ships[0].reset_small_ship();
@@ -102,6 +103,9 @@ public:
 				GameConfig::print_char(board[i][j],is_color);
 			std::cout << endl;
 		}
+	}
+	int get_num_of_blocks() {
+		return num_of_blocks;
 	}
 	void reset_blocks() {
 		blocks[0].pos[0].set(29, 19);
@@ -135,9 +139,6 @@ public:
 		return res;
 	}
 	int is_available(Point point1, Point point2, char current_shape) {
-		//gotoxy(87, 5);
-		//gotoxy(82, 3);
-		//gotoxy(82, 5);
 		if ((is_block(board[point1.getY()][point1.getX()]) || (is_block(board[point2.getY()][point2.getX()])))) {
 			if (!can_i_move_the_block(board[point1.getY()][point1.getX()], current_shape)&& !can_i_move_the_block(board[point2.getY()][point2.getX()], current_shape)
 				||(board[point1.getY()][point1.getX()] == 'W' || board[point2.getY()][point2.getX()] == 'W'))
@@ -371,5 +372,7 @@ public:
 			}
 		}
 	}
-
+	void set_num_of_blocks(int n) {
+		num_of_blocks = n;
+	}
 }; 

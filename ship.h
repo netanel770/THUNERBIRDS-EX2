@@ -50,6 +50,18 @@ public:
 		}
 
 	}
+	void set_locations_big_ship(int num1,int num2,int num3,int num4,int num5,int num6, int num7, int num8) {
+		pos[0].set(num1, num2);
+		pos[1].set(num3, num4);
+		pos[2].set(num5, num6);
+		pos[3].set(num7, num8);
+		is_finish = false;
+	}
+	void set_locations_small_ship(int num1, int num2, int num3, int num4) {
+		pos[0].set(num1, num2);
+		pos[1].set(num3, num4);
+		is_finish = false;
+	}
 	void reset_big_ship() {
 		pos[0].set(1, 7);
 		pos[1].set(2, 7);
@@ -57,6 +69,7 @@ public:
 		pos[3].set(2, 8);
 		is_finish = false;
 	}
+	
 	void reset_small_ship() {
 		pos[0].set(1, 5);
 		pos[1].set(2, 5);

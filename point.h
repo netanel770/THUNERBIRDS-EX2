@@ -64,5 +64,8 @@ public:
 		else if (y == 0)
 			y = GameConfig::GAME_HEIGHT;
 	}
+	void print_point() {
+		cout << "x is " << x << "y is : " << y;
+	}
 	
 };
