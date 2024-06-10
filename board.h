@@ -18,9 +18,9 @@ public:
 	constexpr static size_t WIDTH = 80;
 	constexpr static size_t HEIGHT = 25;
 	constexpr static size_t NUM_SHIPS = 2;
-	constexpr static size_t NUM_BLOCKS = 6;
+	constexpr static size_t NUM_BLOCKS = 7;
 	// the original board that will be copied to the actual board
-	char original_board[HEIGHT][WIDTH + 1] = {
+	/*char original_board[HEIGHT][WIDTH + 1] = {
 		//   01234567890123456789012345678901234567890123456789012345678901234567890123456789
 			"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", // 0
 			"W                                                                              W", // 1
@@ -47,8 +47,9 @@ public:
 			"W                                                                              W", // 22
 			"W                                                                         33   W", // 23
 			"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"  // 24
-	};
+	};*/
 	// the actual board that will be modified
+	char original_board[HEIGHT][WIDTH + 1];
 	char board[HEIGHT][WIDTH + 1];
 	Ship ships[NUM_SHIPS];
 	Ship org_small;
@@ -57,6 +58,7 @@ public:
 	Block* org_blocks;
 	Point legend_pos;
 	Point exit_pos;
+
 	void init() {
 		std::memcpy(board, original_board, sizeof(original_board));
 		blocks = new Block[num_of_blocks];
@@ -139,15 +141,16 @@ public:
 		return res;
 	}
 	int is_available(Point point1, Point point2, char current_shape) {
+		if ((board[point1.getY()][point1.getX()] == 'W' || board[point2.getY()][point2.getX()] == 'W') || (board[point1.getY()][point1.getX()] == '#'
+			|| board[point2.getY()][point2.getX()] == '#') || (board[point1.getY()][point1.getX()] == '@' || board[point2.getY()][point2.getX()] == '@'))
+			return 0;
 		if ((is_block(board[point1.getY()][point1.getX()]) || (is_block(board[point2.getY()][point2.getX()])))) {
 			if (!can_i_move_the_block(board[point1.getY()][point1.getX()], current_shape)&& !can_i_move_the_block(board[point2.getY()][point2.getX()], current_shape)
 				||(board[point1.getY()][point1.getX()] == 'W' || board[point2.getY()][point2.getX()] == 'W'))
 				return 0;
 			return 2;
 		}
-		if ((board[point1.getY()][point1.getX()] == 'W' || board[point2.getY()][point2.getX()] == 'W') || (board[point1.getY()][point1.getX()] == '#'
-			|| board[point2.getY()][point2.getX()] == '#') || (board[point1.getY()][point1.getX()] == '@' || board[point2.getY()][point2.getX()] == '@'))
-			return 0;
+
 		return 1;
 	}
 	bool is_exit_point(Point point1, Point point2,char current_ship) {

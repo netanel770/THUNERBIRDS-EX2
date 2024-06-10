@@ -64,13 +64,13 @@ public:
 	}
 	void reset_big_ship(Ship org) {
 		for (int i = 0; i < 4; i++)
-			pos[i].set(org.getPos(i).getX(), org.getPos(i).getX());
+			pos[i].set(org.getPos(i).getX(), org.getPos(i).getY());
 		is_finish = false;
 	}
 	
 	void reset_small_ship(Ship org) {
 		for(int i=0;i<2;i++)
-		pos[i].set(org.getPos(i).getX(), org.getPos(i).getX());
+		pos[i].set(org.getPos(i).getX(), org.getPos(i).getY());
 		is_finish = false;
 	}
 	void set_shape(char shape)

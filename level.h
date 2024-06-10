@@ -7,9 +7,10 @@
 #include <vector>
 using namespace std;
 class level {
-	Board board;
+	
 	Timer timer;
 public:
+    Board board;
 	void bulid_board_from_file(string file_name) {
         std::ifstream file(file_name); // Assuming the file is named input.txt
         if (!file.is_open()) {
@@ -82,6 +83,7 @@ public:
         int i = 0;
         std::vector<int>info = getNumbersFromString(str);
         board.set_num_of_blocks(info[13]);
+
         board.init();
         timer.set_minute(0);
         timer.set_mili_second(info[0]);
@@ -106,6 +108,7 @@ public:
             else {
                 if (row < Board::HEIGHT && col < Board::WIDTH) {
                     board.board[row][col] = ch;
+                    board.original_board[row][col] = ch;
                     col++;
                 }
             }
