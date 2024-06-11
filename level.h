@@ -7,9 +7,10 @@
 #include <vector>
 using namespace std;
 class level {
-	Board board;
+	
 	Timer timer;
 public:
+    Board board;
 	void bulid_board_from_file(string file_name) {
         std::ifstream file(file_name); // Assuming the file is named input.txt
         if (!file.is_open()) {
@@ -77,15 +78,21 @@ public:
             }
         }
     }
-    
+    Timer get_timer() {
+        return timer;
+    }
+    void reset_timer_to_start() {
+        timer.reset_to_start();
+    }
+    bool reduce_second_for_timer() {
+       return  timer.reduce_mili_second();
+    }
     void bulid_obj_from_string(const std::string& str) {
         int i = 0;
         std::vector<int>info = getNumbersFromString(str);
         board.set_num_of_blocks(info[13]);
         board.init();
-        timer.set_minute(0);
-        timer.set_mili_second(info[0]);
-        //timer.print_timer();
+        timer.update_time_from_file(info[0]);
         board.ships[0].set_locations_big_ship(info[1], info[2], info[3], info[4], info[5], info[6], info[7], info[8]);
         board.ships[1].set_locations_small_ship(info[9], info[10], info[11], info[12]);
         board.org_big.set_locations_big_ship(info[1], info[2], info[3], info[4], info[5], info[6], info[7], info[8]);
@@ -106,6 +113,7 @@ public:
             else {
                 if (row < Board::HEIGHT && col < Board::WIDTH) {
                     board.board[row][col] = ch;
+                    board.original_board[row][col] = ch;
                     col++;
                 }
             }

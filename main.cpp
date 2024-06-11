@@ -10,11 +10,9 @@ int main() {
     Game theGame;
     theGame.init();
     theGame.menu();
-    //level l;
+   // level l;
     //l.bulid_board_from_file("tb1.screen.txt");
     //l.get_board().show(false);
-   
-
     return 0;
 }
 
