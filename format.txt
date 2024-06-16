@@ -1,0 +1,23 @@
+tb.screen:
+time as int (number/1000 as min),
+space,
+big ship cordinates as 4 points seperated with spaces (x and then y),
+space,
+same for small ship (now with 2 points),
+space,
+number of blocks,
+space,
+for each block:
+the size of the block 
+and then,
+the cordinates.
+new line and then the board with chars.
+//the file is saperated by spaces.
+
+tb.steps:
+'T' or 'F' for "is_color_mode" (the char as ascci) 
+for any move:
+the time of the move,
+space,
+the input of the keyboard at this time (only legimatic inputs)
+
