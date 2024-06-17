@@ -15,19 +15,69 @@
 #include <sstream>
 #include "level.h"
 class Game {
+protected:
     constexpr static size_t num_of_levels = 3;
     Player player;
+    bool record_mode = true;
+    string file_name;
     char current_ship = 'b';
     bool is_color;
     level levels_arr[num_of_levels];
     int current_level_index;
+    bool game_from_keyboard = true;
+    bool silent_mode = false;
 public:
+    virtual void update_file_name() {
+        string res = build_steps_file_name(".steps");
+        delete_prev_file_content();
+        std::ofstream outFile(file_name, std::ios::app);
+        if (!outFile.is_open()) {
+            std::cerr << "Error: Could not open the file." << std::endl;
+            return;
+        }
+        res = std::to_string(GameConfig::bool_as_char(is_color));
+        outFile << res << std::endl;
+        outFile.close();
+    }
+    void set_file_name(string fn) {
+        file_name = fn;
+    }
+    string build_steps_file_name(string type) {
+        string res = "tb0";
+        res.append(std::to_string(current_level_index + 1));
+        res.append(type);
+        res.append(".txt");
+        file_name = res;
+        return res;
+    }
+    virtual void write_to_step_file(char pressed_char) {
+            string res = "";
+            res.append(std::to_string(levels_arr[current_level_index].get_timer().get_minute()));
+            res.append(" ");
+            res.append(std::to_string(levels_arr[current_level_index].get_timer().get_second()));
+            res.append(" ");
+            res.append(std::to_string(levels_arr[current_level_index].get_timer().get_mili_second()));
+            res.append(" ");
+            res.append(std::to_string(pressed_char));
+            res.append(" ");
+            std::ofstream outFile(file_name, std::ios::app);
+            if (!outFile.is_open()) {
+                std::cerr << "Error: Could not open the file." << std::endl;
+                return;
+            }
+            outFile << res << std::endl;
+            outFile.close();
+        }
+    
     void init() {
-        levels_arr[0].bulid_board_from_file("tb1.screen.txt");
-        levels_arr[1].bulid_board_from_file("tb2.screen.txt");
-        levels_arr[2].bulid_board_from_file("tb3.screen.txt");
+        levels_arr[0].bulid_board_from_file("tb01.screen.txt");
+        levels_arr[1].bulid_board_from_file("tb02.screen.txt");
+        levels_arr[2].bulid_board_from_file("tb03.screen.txt");
         //levels_arr[0].get_board().init();
         current_level_index = 0;
+        if (game_from_keyboard)
+            // update_file_name();
+            file_name = "tb01.steps.txt";
     }
     void set_is_color(bool n) {
         is_color = n;
@@ -53,8 +103,10 @@ public:
             switch (choice) {
             case 1:
                 std::cout << "Starting a new game without colors...\n";
-                levels_arr[0].board.reset_board();
                 is_color = false;
+                current_level_index = 0;
+                update_file_name();
+                levels_arr[0].board.reset_board();
                 levels_arr[0].board.show(is_color);
                 int a;
                 is_exit = running_game();
@@ -63,7 +115,9 @@ public:
                 break;
             case 2:
                 std::cout << "Starting a new game with colors...\n";
-                levels_arr[current_level_index].board.reset_board();
+                current_level_index = 0;
+                update_file_name();
+                levels_arr[0].board.reset_board();
                 is_color = true;
                 levels_arr[current_level_index].board.show(is_color);
                 is_exit = running_game();
@@ -74,16 +128,25 @@ public:
                 std::cout << "choose a specific level with colors...\n";
                 is_color = true;              
                 current_level_index = choosing_level_managment() - 1;
+                update_file_name();
+                levels_arr[current_level_index].board.reset_board();
+                levels_arr[current_level_index].board.show(is_color);
                 is_exit = running_game();
+                clrscr();
+                GameConfig::show_menu();
                 break;
             case 4:
                 std::cout << "choose a specific level without colors...\n";
                 is_color = false;
                 current_level_index = choosing_level_managment()-1; 
+                update_file_name();
+                levels_arr[current_level_index].board.reset_board();
+                levels_arr[current_level_index].board.show(is_color);
                 is_exit = running_game();
+                clrscr();
+                GameConfig::show_menu();
                 break;
                 
-
             case 8:
                 clrscr();
                 GameConfig::print_instructions();
@@ -105,47 +168,52 @@ public:
         }
 
     }
+    void delete_prev_file_content() {
+        std::ofstream file(file_name, std::ios::out);
+        if (!file) {
+            std::cerr << "Error: Unable to open file " << file_name << std::endl;
+            return;
+        }
+    }
+    virtual void show_board() {
+        levels_arr[current_level_index].board.show(is_color);
+    }
     void set_for_next_level() {
         current_level_index++;
+        if (game_from_keyboard)
+            update_file_name();
+        else {
+            string res = build_steps_file_name(".steps");
+            build_vectors_from_file();
+        }
+            
         levels_arr[current_level_index].board.reset_board();
-        levels_arr[current_level_index].board.show(is_color);
+        //levels_arr[current_level_index].board.show(is_color);
+        show_board();
     }
     void set_current_ship(char ch) {
         current_ship = ch;
     }
-    bool matchesPattern(const std::string& filename) {
-        const std::string prefix = "tb";
-        const std::string suffix = ".screen.txt";
-        return filename.size() >= prefix.size() + suffix.size() &&
-            filename.compare(0, prefix.size(), prefix) == 0 &&
-            filename.compare(filename.size() - suffix.size(), suffix.size(), suffix) == 0;
-    }
-    std::string readFileContent(const std::string& filename) {
-        std::ifstream file(filename);
-        if (!file) {
-            std::cerr << "Unable to open file: " << filename << std::endl;
-            return "";
-        }
-        std::stringstream buffer;
-        buffer << file.rdbuf(); // Read the file content into the stringstream
-        file.close();
-        return buffer.str(); // Convert stringstream to string and return
-    }
-
     bool checking_game_details() {
         if (levels_arr[current_level_index].get_timer().time_is_over() && player.get_life() > 0)
         {
             levels_arr[current_level_index].board.reset_board();
-            levels_arr[current_level_index].board.show(is_color);
+            //levels_arr[current_level_index].board.show(is_color);
+            show_board();
             player.reduce_life();
             levels_arr[current_level_index].reset_timer_to_start();
             return true;
         }
         return false;
     }
+    virtual void Sleeping() {
+        Sleep(100);
+    }
     void print_current_ship() {
-        gotoxy(60, 2);
-        cout << "current ship:"<<current_ship;
+        if (silent_mode == false) {
+            gotoxy(60, 2);
+            cout << "current ship:" << current_ship;
+        }
     }
     char updating_current_ship(char current_ship, char pressed_char) {
         if (current_ship == (char)GameConfig::eKeys::SMALL_SHIP ||
@@ -163,47 +231,11 @@ public:
         print_current_ship();
         return current_ship;
     }
-    // File containing the list of filenames
-    void get_levels_details() {
-        std::ifstream fileList("file_list.txt");
+    virtual void  build_vectors_from_file() {
 
-        // Check if the file_list.txt file opened successfully
-        if (!fileList) {
-            std::cerr << "Unable to open file_list.txt" << std::endl;
-            return;
-        }
-
-        // Vector to store matching file names
-        std::vector<std::string> matchingFiles;
-        std::string filename;
-
-        // Read file names from the text file
-        while (std::getline(fileList, filename)) {
-            if (matchesPattern(filename)) {
-                matchingFiles.push_back(filename);
-            }
-        }
-
-        // Close the file list input file stream
-        fileList.close();
-
-        // Sort the file names lexicographically
-        std::sort(matchingFiles.begin(), matchingFiles.end());
-
-        // Read and print files in lexicographical order
-        for (const auto& fname : matchingFiles) {
-            std::string content = readFileContent(fname);
-            if (!content.empty()) {
-                std::cout << "Contents of file: " << fname << std::endl;
-                std::cout << content << std::endl;
-            }
-            else {
-                std::cerr << "Failed to read the content of the file: " << fname << std::endl;
-            }
-        }
     }
-    bool is_esc() {
-        char temp;
+    virtual bool is_esc() {
+        char temp='\0';
         clrscr();
         gotoxy(1, 1);
         std::cout << "Game paused, press ESC again to continue or 9 to Exit";
@@ -213,8 +245,39 @@ public:
         if (temp == '9')
             return true;
         clrscr();
-        levels_arr[current_level_index].get_board().show(is_color);
+        //levels_arr[current_level_index].board.show(is_color);
+        show_board();
         return false;
+    }
+    virtual void write_to_result_file(bool is_won) {
+        if (record_mode) {
+            string f_name = build_steps_file_name(".results");
+            std::ofstream file(f_name, std::ios::out);
+            if (!file) {
+                std::cerr << "Error: Unable to open file " << file_name << std::endl;
+                return;
+            }
+            ofstream result_file(f_name);
+            if (!result_file.is_open()) {
+                std::cerr << "Error opening result file: " << f_name << std::endl;
+                return;
+            }
+            if (is_won) {
+                string res;
+                res.append(to_string(player.get_life()));
+                res.append(" ");
+                res.append(to_string(levels_arr[current_level_index].get_timer().get_minute()));
+                res.append(" ");
+                res.append(to_string(levels_arr[current_level_index].get_timer().get_second()));
+                res.append(" ");
+                res.append(to_string(levels_arr[current_level_index].get_timer().get_mili_second()));
+                result_file << res << std::endl;
+            }
+            else {
+                result_file << "0 0 0 0" << std::endl;
+            }
+            result_file.close();
+        }
     }
     int left_or_right(char pressed_char, int index, char current_ship_shape) {
         Point point1, point2;
@@ -244,7 +307,10 @@ public:
         if (levels_arr[current_level_index].board.is_exit_point(point1, point2, current_ship)) {
            levels_arr[current_level_index].board.delete_ship_from_screen(current_ship_shape);
             if (levels_arr[current_level_index].board.ships[0].get_is_finish() &&levels_arr[current_level_index].board.ships[1].get_is_finish())
+            {
+                write_to_result_file(true);
                 return 1;
+                }
         }
         else if (isAvalable && !levels_arr[current_level_index].board.ships[index].get_is_finish()) {
             if (isAvalable == 1) {
@@ -253,6 +319,7 @@ public:
                    levels_arr[current_level_index].board.move_left_the_ship(current_ship_shape);
                 else
                    levels_arr[current_level_index].board.move_right_the_ship(current_ship_shape);
+                if(!silent_mode)
                levels_arr[current_level_index].board.ships[index].print_ship(is_color);
             }
             if (isAvalable == 2)
@@ -283,12 +350,14 @@ public:
                         levels_arr[current_level_index].board.move_left_the_block(block_shape);
                     else
                         levels_arr[current_level_index].board.move_right_the_block(block_shape);
+                    if(!silent_mode)
                     levels_arr[current_level_index].board.blocks[block_shape - '0'].print_block(block_shape, is_color);
                     levels_arr[current_level_index].board.delete_ship_from_screen(current_ship_shape);
                     if (GameConfig::is_left(pressed_char))
                         levels_arr[current_level_index].board.move_left_the_ship(current_ship_shape);
                     else
                         levels_arr[current_level_index].board.move_right_the_ship(current_ship_shape);
+                    if(!silent_mode)
                     levels_arr[current_level_index].board.ships[index].print_ship(is_color);
                 }
             }
@@ -312,7 +381,10 @@ public:
         if (levels_arr[current_level_index].board.is_exit_point(point1, point2, current_ship)) {
             levels_arr[current_level_index].board.delete_ship_from_screen(current_ship_shape);
             if (levels_arr[current_level_index].board.ships[0].get_is_finish() && levels_arr[current_level_index].board.ships[1].get_is_finish())
+            {
+                write_to_result_file(true);
                 return 1;
+            }
         }
         else if ((levels_arr[current_level_index].board.is_available(point1, point2, current_ship) == 1) && !levels_arr[current_level_index].board.ships[index].get_is_finish())
         {
@@ -321,12 +393,22 @@ public:
                 levels_arr[current_level_index].board.move_down_the_ship(current_ship_shape);
             else
                 levels_arr[current_level_index].board.move_up_the_ship(current_ship_shape);
+            if(!silent_mode)
             levels_arr[current_level_index].board.ships[index].print_ship(is_color);
         }
         return 0;
     }
-    int running_game()
-    {
+    virtual int char_is_pressed(){
+        return _kbhit();
+    }
+    virtual char char_from_keyboard() {
+        return 'd';
+    }
+    level* get_levels_arr() {
+        return levels_arr;
+    }
+    virtual int running_game()
+    {   
         print_current_ship();
         char current_ship_shape;
         player.init();
@@ -341,15 +423,23 @@ public:
                 current_ship = 'b';
                 current_ship_shape = '#';
             }
-            levels_arr[current_level_index].get_timer().print_timer();
-            player.print_life();
-            Sleep(100);
-            if (_kbhit()) {
+            if (!silent_mode) {
+                levels_arr[current_level_index].get_timer().print_timer();
+                player.print_life();
+            }
+            Sleeping();
+            if (char_is_pressed()) {
                 gotoxy(85, 1);
-                levels_arr[current_level_index].board.ships[1].getPos(0).print_point();
-                gotoxy(85, 2);
-                levels_arr[current_level_index].board.ships[1].getPos(1).print_point();
-                char temp = _getch();
+                char temp;
+                if (game_from_keyboard) {
+                    temp = _getch();
+                }
+                else {
+                    //if (_getch() == 27)
+                      //  temp = 27;
+                    //else
+                        temp = char_from_keyboard();
+                }
                 if (GameConfig::charInString("AWDXSBawdsxb", temp))
                     pressed_char = temp;
                 if (pressed_char == 27)
@@ -357,6 +447,9 @@ public:
                     if (is_esc())
                         return 1;
                 }
+                if ((GameConfig::charInString("AWDXSBawdsxb", temp))&&record_mode&& game_from_keyboard)
+                    if(temp!=27)
+                    write_to_step_file(pressed_char);
                 current_ship = updating_current_ship(current_ship, pressed_char);
             }
             if (current_ship == 's') {
@@ -388,6 +481,8 @@ public:
                 }
             }
         }
+        write_to_result_file(false);
+        
     return 0;
 }
     

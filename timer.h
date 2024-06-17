@@ -9,6 +9,12 @@ class Timer {
 	int org_second;
 	int mili_second;
 public:
+	Timer(int min, int sec, int mili) {
+		minute = min;
+		second = sec;
+		mili_second = mili;
+
+	}
 	Timer() {
 
 		minute = 0;
@@ -50,12 +56,12 @@ public:
 		return (minute == 0 && second == 0 && mili_second == 0);
 	}
 	void reset_to_start() {
-		minute =org_minute;
+		minute = org_minute;
 		second = org_second;
 		mili_second = 0;
 	}
 	bool reduceTime() {
-		
+
 		mili_second -= 100;
 		if (mili_second < 0) {
 			mili_second += 1000;
@@ -87,11 +93,13 @@ public:
 	}
 	void update_time_from_file(int num) {
 		minute = num / 1000;
-		second = (num%1000)/10;
+		second = (num % 1000) / 10;
 		mili_second = 0;
 		org_second = second;
 		org_minute = minute;
 	}
-	
+	bool compare(const Timer& other) {
+		return (other.mili_second == mili_second && other.minute == minute && other.second == second);
+	}
 
 };

@@ -33,9 +33,9 @@ public:
 	}
 	void static show_levels_menu() {
 		std::cout << "levels menu\n\n\n\n";
-		std::cout << "(1) level 1\n";
-		std::cout << "(2) level 2\n";
-		std::cout << "(3) level 3\n";
+		std::cout << "(1) tb1.screen\n";
+		std::cout << "(2) tb2.screen\n";
+		std::cout << "(3) tb3.screen\n";
 	}
 	static void print_instructions() {
 		std::cout << "Purpose of the game : Reach the endpoint(x) with both spaceships.\n\nSmall spacecraft : --\nLarge spacecraft : ++\nblocks are symbolds by numbers between a to e or blue blocks\nTo reach the endpoint, navigate through the maze and move blocks if necessary.Remember :\n\nSmall spaceship can move blocks of size 2 or smaller.\nLarge spaceship can move blocks of size 6 or smaller.\nPress 'S' to control the small spaceship, and 'B' for the large spaceship.\nMovement controls :\nTo move right : press 'd'\nTo move left : press 'a'\nTo move down : press 'x'\nTo move up : press 'w'\n to pause press esc\nGood luck!\n";
@@ -89,6 +89,13 @@ public:
 			else if (c == '4') {
 				std::cout << "d";
 			}
+			else if (c == '5') {
+				std::cout << "e";
+			}
+			else if (c == '6') {
+				std::cout << "f";
+			}
+
 			else
 				if (c == '@') {
 					std::cout <<  "-";
@@ -100,6 +107,16 @@ public:
 				std::cout << c;
 			}
 		}
+	}
+	static char bool_as_char(const bool b) {
+		if (b)
+			return 'T';
+		return 'F';
+	}
+	static bool char_as_bool(const char c) {
+		if (c=='T')
+			return true;
+		return false;
 	}
 };
 #endif
