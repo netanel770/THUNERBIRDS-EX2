@@ -211,10 +211,20 @@ public:
 	void move_right_the_ship(char ship_shape) {
 		if (ship_shape == '@')
 		{
-			for (int i = 0; i < 2; i++)
+			if (ships[0].getPos(1).getX() == WIDTH-1)
 			{
-				ships[0].pos[i].setx(ships[0].pos[i].getX() + 1);
-				update_char_in_board(ships[0].pos[i], ship_shape);
+				for (int i = 0; i < 2; i++)
+				{
+					ships[0].pos[i].setx(ships[0].pos[i].getX() - WIDTH+2);
+					update_char_in_board(ships[0].pos[i], ship_shape);
+				}
+			}
+			else {
+				for (int i = 0; i < 2; i++)
+				{
+					ships[0].pos[i].setx(ships[0].pos[i].getX() + 1);
+					update_char_in_board(ships[0].pos[i], ship_shape);
+				}
 			}
 		}
 		else
@@ -230,10 +240,20 @@ public:
 	void move_left_the_ship(char ship_shape) {
 		if (ship_shape == '@')
 		{
-			for (int i = 0; i < 2; i++)
+			if (ships[0].getPos(0).getX() == 0)
 			{
-				ships[0].pos[i].setx(ships[0].pos[i].getX() - 1);
-				update_char_in_board(ships[0].pos[i], ship_shape);
+				for (int i = 0; i < 2; i++)
+				{
+					ships[0].pos[i].setx(ships[0].pos[i].getX() + WIDTH - 1);
+					update_char_in_board(ships[0].pos[i], ship_shape);
+				}
+			}
+			else {
+				for (int i = 0; i < 2; i++)
+				{
+					ships[0].pos[i].setx(ships[0].pos[i].getX() - 1);
+					update_char_in_board(ships[0].pos[i], ship_shape);
+				}
 			}
 		}
 		else

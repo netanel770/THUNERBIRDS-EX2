@@ -93,8 +93,8 @@ public:
         board.set_num_of_blocks(info[13]);
         board.init();
         timer.update_time_from_file(info[0]);
-        board.ships[0].set_locations_big_ship(info[1], info[2], info[3], info[4], info[5], info[6], info[7], info[8]);
-        board.ships[1].set_locations_small_ship(info[9], info[10], info[11], info[12]);
+        board.ships[1].set_locations_big_ship(info[1], info[2], info[3], info[4], info[5], info[6], info[7], info[8]);
+        board.ships[0].set_locations_small_ship(info[9], info[10], info[11], info[12]);
         board.org_big.set_locations_big_ship(info[1], info[2], info[3], info[4], info[5], info[6], info[7], info[8]);
         board.org_small.set_locations_small_ship(info[9], info[10], info[11], info[12]);
         bulid_block_from_vector(info);
