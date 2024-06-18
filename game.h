@@ -27,16 +27,21 @@ protected:
     bool game_from_keyboard = true;
     bool silent_mode = false;
 public:
+    void set_record_mode(bool b) {
+        record_mode = b;
+    }
     virtual void update_file_name() {
         string res = build_steps_file_name(".steps");
         delete_prev_file_content();
         std::ofstream outFile(file_name, std::ios::app);
         if (!outFile.is_open()) {
             std::cerr << "Error: Could not open the file." << std::endl;
-            return;
+            exit(0);
         }
         res = std::to_string(GameConfig::bool_as_char(is_color));
-        outFile << res << std::endl;
+        if (record_mode) {
+            outFile << res << std::endl;
+        }
         outFile.close();
     }
     void set_file_name(string fn) {
@@ -63,7 +68,7 @@ public:
             std::ofstream outFile(file_name, std::ios::app);
             if (!outFile.is_open()) {
                 std::cerr << "Error: Could not open the file." << std::endl;
-                return;
+                exit(0);
             }
             outFile << res << std::endl;
             outFile.close();
@@ -73,10 +78,8 @@ public:
         levels_arr[0].bulid_board_from_file("tb01.screen.txt");
         levels_arr[1].bulid_board_from_file("tb02.screen.txt");
         levels_arr[2].bulid_board_from_file("tb03.screen.txt");
-        //levels_arr[0].get_board().init();
         current_level_index = 0;
         if (game_from_keyboard)
-            // update_file_name();
             file_name = "tb01.steps.txt";
     }
     void set_is_color(bool n) {
@@ -158,7 +161,6 @@ public:
                 GameConfig::show_menu();
                 break;
             case 9:
-                exit(0);
                 return; // Exit the program
                 
             default:
@@ -169,13 +171,15 @@ public:
 
     }
     void delete_prev_file_content() {
-        std::ofstream file(file_name, std::ios::out);
-        if (!file) {
-            std::cerr << "Error: Unable to open file " << file_name << std::endl;
-            return;
+        if (record_mode) {
+            std::ofstream file(file_name, std::ios::out);
+            if (!file) {
+                std::cerr << "Error: Unable to open file " << file_name << std::endl;
+                return;
+            }
         }
     }
-    virtual void show_board() {
+    virtual void show_board() const{
         levels_arr[current_level_index].board.show(is_color);
     }
     void set_for_next_level() {
@@ -206,11 +210,11 @@ public:
         }
         return false;
     }
-    virtual void Sleeping() {
+    virtual void Sleeping() const{
         Sleep(100);
     }
-    void print_current_ship() {
-        if (silent_mode == false) {
+    void print_current_ship()const {
+        if (silent_mode == false){
             gotoxy(60, 2);
             cout << "current ship:" << current_ship;
         }
@@ -242,8 +246,11 @@ public:
         temp = _getch();
         while (temp != 27 && temp != '9')
             temp = _getch();
-        if (temp == '9')
+        if (temp == '9') {
+            write_to_result_file(false);
             return true;
+        }
+            
         clrscr();
         //levels_arr[current_level_index].board.show(is_color);
         show_board();
@@ -260,7 +267,7 @@ public:
             ofstream result_file(f_name);
             if (!result_file.is_open()) {
                 std::cerr << "Error opening result file: " << f_name << std::endl;
-                return;
+                exit(0);
             }
             if (is_won) {
                 string res;
@@ -398,13 +405,13 @@ public:
         }
         return 0;
     }
-    virtual int char_is_pressed(){
+    virtual int char_is_pressed()const{
         return _kbhit();
     }
     virtual char char_from_keyboard() {
         return 'd';
     }
-    level* get_levels_arr() {
+    level* get_levels_arr(){
         return levels_arr;
     }
     virtual int running_game()
@@ -415,6 +422,7 @@ public:
         levels_arr[current_level_index].reset_timer_to_start();
         char pressed_char = 'b';
         int index;
+        char temp;
         while (levels_arr[current_level_index].reduce_second_for_timer() && player.get_life() != 0) {
             hideCursor();
             Point point1, point2;
@@ -430,14 +438,23 @@ public:
             Sleeping();
             if (char_is_pressed()) {
                 gotoxy(85, 1);
-                char temp;
                 if (game_from_keyboard) {
                     temp = _getch();
                 }
                 else {
-                    //if (_getch() == 27)
-                      //  temp = 27;
-                    //else
+                    if (!silent_mode)
+                    {
+                        if (_kbhit())
+                        {
+                            if (_getch() == 27)
+                                if (is_esc())
+                                    return 1;
+                            temp = char_from_keyboard();
+                        }
+                        else
+                            temp = char_from_keyboard();
+                    }
+                    else
                         temp = char_from_keyboard();
                 }
                 if (GameConfig::charInString("AWDXSBawdsxb", temp))
@@ -451,6 +468,12 @@ public:
                     if(temp!=27)
                     write_to_step_file(pressed_char);
                 current_ship = updating_current_ship(current_ship, pressed_char);
+            }
+          else if (!game_from_keyboard && !silent_mode && _kbhit())
+            {
+               if (_getch() == 27)
+               if (is_esc())
+                    return 1;
             }
             if (current_ship == 's') {
                 index = 0;

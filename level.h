@@ -12,10 +12,10 @@ class level {
 public:
     Board board;
 	void bulid_board_from_file(string file_name) {
-        std::ifstream file(file_name); // Assuming the file is named input.txt
+        std::ifstream file(file_name);
         if (!file.is_open()) {
             std::cerr << "Error opening file" << std::endl;
-            return;
+            exit(0);
         }
         std::stringstream part1, part2;
         bool isPart1 = true;
@@ -23,7 +23,7 @@ public:
 
         while (file.get(ch)) {
             if (ch == 'W' && isPart1) {
-                isPart1 = false; // Switch to part2 after the first 'W'
+                isPart1 = false;
             }
             if (isPart1) {
                 part1 << ch;
@@ -40,8 +40,7 @@ public:
         while (!part1Str.empty() && std::isspace(part1Str.back())) {
             part1Str.pop_back();
         }
-     //   std::cout << "Part 1:\n" << part1Str << std::endl;
-        //std::cout << "Part 2:\n" << part2Str << std::endl;
+     
         bulid_obj_from_string(part1Str);
 	}
     std::vector<int> getNumbersFromString(const std::string& str) {
@@ -63,7 +62,6 @@ public:
     }
     
     void bulid_block_from_vector(std::vector<int>info) {
-        //cout << info[13];
         int info_index = 14;
         int size_of_block = info[info_index];
         for (int i = 0; i <info[13] ; i++) {
@@ -78,7 +76,7 @@ public:
             }
         }
     }
-    Timer get_timer() {
+    Timer get_timer()const {
         return timer;
     }
     void reset_timer_to_start() {
@@ -98,7 +96,6 @@ public:
         board.org_big.set_locations_big_ship(info[1], info[2], info[3], info[4], info[5], info[6], info[7], info[8]);
         board.org_small.set_locations_small_ship(info[9], info[10], info[11], info[12]);
         bulid_block_from_vector(info);
-        //board.ships[1].getPos(1).print_point();
        
     }
     
@@ -120,17 +117,8 @@ public:
         }
     }
 
-	void update_data_members_from_file(string file_name) {
-		std::ifstream file(file_name);
-		string line;
-		//getline(file, line);
-		//while (getline(file, line)) {
-			//std::cout << line << std::endl; // Read and print each line
-		//}
-		file.close();
 	
-	}
-    Board get_board() {
+    Board get_board()const {
         return board;
     }
 };

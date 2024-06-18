@@ -22,6 +22,10 @@ public:
 			for (int i = 0; i < num_of_levels; i++) {
 				current_file_name = build_steps_file_name(".results");
 				std::ifstream file(current_file_name);
+				if (!file.is_open()) {
+					std::cerr << "Error: Could not open the file." << std::endl;
+					exit(0);
+				}
 				if (file >> results_life_from_file[i] >> minute >> second >> mili) {
 					results_time_from_file[i].set_minute(minute);
 					results_time_from_file[i].set_second(second);
@@ -42,7 +46,7 @@ public:
 	}
 	
 	
-	void show_board()override {
+	void show_board()const override  {
 
 	}
 	void check_result() {
@@ -83,8 +87,8 @@ public:
 			results_time_from_game[current_level_index].set_minute(0);
 		}
 	}
-	 void Sleeping() override {
-		 //Sleep(1);
+	 void Sleeping() const override {
+		
 	}
 
 };

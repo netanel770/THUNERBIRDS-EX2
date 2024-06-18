@@ -23,13 +23,13 @@ public:
 	Point getPos(size_t i) const {
 		return pos[i];
 	}
-	bool get_is_finish() {
+	bool get_is_finish()const {
 		return is_finish;
 	}
 	void set_is_finish(bool new_finish) {
 		is_finish = new_finish;
 	}
-	void print_ship(bool is_color)
+	void print_ship(bool is_color)const
 	{
 		if (ship_shape == '@')
 		{

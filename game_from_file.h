@@ -25,6 +25,7 @@ public:
         file_ptr.open(file_name, std::ios::in | std::ios::out);
         if (!file_ptr.is_open()) {
             std::cerr << "Unable to open file: " << file_name << std::endl;
+            exit(0);
         }
         current_level_index = getStepNumber() - 1;
         build_vectors_from_file();
@@ -44,7 +45,7 @@ public:
         levels_arr[current_level_index].board.reset_board();
         
     }
-    virtual void show_board_to_user() {
+    virtual void show_board_to_user()const {
         levels_arr[current_level_index].board.show(is_color);
     }
     virtual void write_to_result_file(bool is_won) {
@@ -62,7 +63,8 @@ public:
                     firstLineDigits += c;
                 }
                 else {
-                    break;
+                    cout << "Error in file openning";
+                    exit(0);
                 }
             }
             // Convert the firstLineDigits string to an integer
@@ -99,7 +101,7 @@ public:
         }
         return -1;
     }
-    virtual void Sleeping() override{
+    virtual void Sleeping() const override {
         Sleep(2);
     }
     // Destructor
@@ -107,6 +109,7 @@ public:
         if (file_ptr.is_open()) {
             file_ptr.close();
         }
+        
     }
 
     // Method to get the current file name
@@ -127,17 +130,13 @@ public:
         res.append(".txt");
         file_name = res;
     }
-
-    int char_is_pressed() override {
-       // if (_kbhit()) {
-         //   if (_getch() == 27)
-           //     return -1;
-        //}
+    
+    int char_is_pressed() const override  {
         if(move_index<timers.size())
         return timers[move_index].compare(levels_arr[current_level_index].get_timer());
         return false;
     }
-   /* bool is_esc()override {
+    bool is_esc()override {
         gotoxy(9, 1);
         cout << "press 9 to exit and escape to resume";
         char temp = _getch();
@@ -145,10 +144,12 @@ public:
         {
             temp = _getch();
         }
-        if(temp == '9')
+        if (temp == '9') {
+            clrscr();
             return true;
+        }
         gotoxy(9, 1);
         cout << "                                    ";
         return false;
-    }*/
+    }
 };

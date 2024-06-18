@@ -113,7 +113,7 @@ public:
 			return 'T';
 		return 'F';
 	}
-	static bool char_as_bool(const char c) {
+	static bool char_as_bool(const char c){
 		if (c=='T')
 			return true;
 		return false;

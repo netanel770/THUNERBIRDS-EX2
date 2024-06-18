@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 using namespace std;
 class Timer {
@@ -37,22 +36,22 @@ public:
 	void set_minute(int minute1) {
 		minute = minute1;
 	}
-	int get_second() {
+	int get_second()const {
 		return second;
 	}
-	int get_mili_second() {
+	int get_mili_second()const {
 		return mili_second;
 	}
-	int get_minute() {
+	int get_minute() const{
 		return minute;
 	}
 
-	void print_timer() {
+	void print_timer() const{
 		gotoxy(9, 2);
 		cout << minute << ":" << second << ":" << mili_second << std::endl;
 
 	}
-	bool time_is_over() {
+	bool time_is_over() const{
 		return (minute == 0 && second == 0 && mili_second == 0);
 	}
 	void reset_to_start() {
@@ -98,7 +97,7 @@ public:
 		org_second = second;
 		org_minute = minute;
 	}
-	bool compare(const Timer& other) {
+	bool compare(const Timer& other)const {
 		return (other.mili_second == mili_second && other.minute == minute && other.second == second);
 	}
 

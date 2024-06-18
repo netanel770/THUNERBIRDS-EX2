@@ -15,16 +15,16 @@ public:
 	void addPoint(int x, int y) {
 		pos[size++].set(x, y);
 	}
-	size_t getSize() const {
+	 size_t getSize() const {
 		return size;
 	}
-	Point getPos(size_t i) const {
+	 Point getPos(size_t i) const {
 		return pos[i];
 	}
-	void set_size(int newsize) {
+	void set_size(const int newsize) {
 		size = newsize;
 	}
-	void print_block(char c,bool is_color) {
+	void print_block(char c,bool is_color)const {
 				for (int i = 0; i < size; i++)
 				{
 					gotoxy(pos[i].getX(), pos[i].getY());

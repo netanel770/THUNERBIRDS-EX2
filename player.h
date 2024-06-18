@@ -4,7 +4,7 @@ class Player {
 	int life;
 public:
 	
-	int get_life() {
+	int get_life() const{
 		return life;
 	}
 	void set_life(int life1) {
@@ -16,7 +16,7 @@ public:
 	void reduce_life() {
 		life--;
 	}
-	void print_life() {
+	void print_life()const {
 		gotoxy(18, 2);
 		cout << "Current life is:" << life;
 	}

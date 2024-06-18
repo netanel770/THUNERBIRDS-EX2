@@ -105,7 +105,7 @@ public:
 		ships[1].reset_big_ship(org_big);
 		reset_blocks();
 	}
-	void show(bool is_color) {
+	void show(bool is_color)const {
 		gotoxy(0, 0);
 		for (int i = 0; i < HEIGHT; i++) {
 			for(int j = 0; j < WIDTH; j++)
@@ -113,7 +113,7 @@ public:
 			std::cout << endl;
 		}
 	}
-	int get_num_of_blocks() {
+	int get_num_of_blocks() const{
 		return num_of_blocks;
 	}
 	void reset_blocks() {
@@ -130,7 +130,7 @@ public:
 	void update_char_in_board(Point point1, char c) {
 		board[point1.getY()][point1.getX()] = c;
 	}
-	bool can_i_move_the_block(char block_shape, char ship_shape)
+	bool can_i_move_the_block(char block_shape, char ship_shape)const
 	{
 		bool res = true;
 		if (ship_shape == 's')
@@ -140,7 +140,7 @@ public:
 		}
 		return res;
 	}
-	int is_available(Point point1, Point point2, char current_shape) {
+	int is_available(Point point1,Point point2,char current_shape) const{
 		if ((board[point1.getY()][point1.getX()] == 'W' || board[point2.getY()][point2.getX()] == 'W') || (board[point1.getY()][point1.getX()] == '#'
 			|| board[point2.getY()][point2.getX()] == '#') || (board[point1.getY()][point1.getX()] == '@' || board[point2.getY()][point2.getX()] == '@'))
 			return 0;
