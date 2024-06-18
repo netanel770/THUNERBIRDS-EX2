@@ -21,3 +21,11 @@ the time of the move,
 space,
 the input of the keyboard at this time (only legimatic inputs)
 
+tb.results:
+number of lives remain
+space,
+minutes remain
+space,
+second remain
+space,
+mili seconds remain
